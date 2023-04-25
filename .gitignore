@@ -1,0 +1,10 @@
+# ROS
+build/
+install/
+log/
+
+# Python
+__pycache__/
+
+# images
+images/
