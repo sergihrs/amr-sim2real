@@ -1,0 +1,123 @@
+import numpy as np
+
+
+class PurePursuit:
+    """Class to follow a path using a simple pure pursuit controller."""
+
+    def __init__(self, dt: float, lookahead_distance: float = 0.5, logger=None):
+        """Pure pursuit class initializer.
+
+        Args:
+            dt: Sampling period [s].
+            lookahead_distance: Distance to the next target point [m].
+
+        """
+        self._dt: float = dt
+        self._lookahead_distance: float = lookahead_distance
+        self._path: list[tuple[float, float]] = []
+
+        self._logger = logger
+
+    def compute_commands(self, x: float, y: float, theta: float) -> tuple[float, float]:
+        """Pure pursuit controller implementation.
+
+        Args:
+            x: Estimated robot x coordinate [m].
+            y: Estimated robot y coordinate [m].
+            theta: Estimated robot heading [rad].
+
+        Returns:
+            v: Linear velocity [m/s].
+            w: Angular velocity [rad/s].
+
+        """
+        # TODO: 4.11. Complete the function body with your code (i.e., compute v and w).
+        if not self._path:
+            return 0.0, 0.0
+
+        v_max = 0.22
+        w_max = 1.8
+
+        _, closest_idx = self._find_closest_point(x, y)
+        target_xy = self._find_target_point([x, y], closest_idx)
+
+        dx = target_xy[0] - x
+        dy = target_xy[1] - y
+        l = float(np.hypot(dx, dy))
+        if l < 1e-3:
+            return 0.0, 0.0
+
+        beta = np.arctan2(dy, dx)
+        alpha = np.arctan2(np.sin(beta - theta), np.cos(beta - theta))
+
+        # Reduce forward speed when heading error is large, but keep non-zero motion.
+        heading_scale = max(0.2, 1.0 - abs(alpha) / (np.pi / 2))
+        v = v_max * heading_scale
+
+        # Slow down close to the end of the path to avoid overshoot and command chattering.
+        if closest_idx >= len(self._path) - 2 and l < self._lookahead_distance:
+            v *= max(0.35, l / max(self._lookahead_distance, 1e-3))
+
+        w = 2.0 * np.sin(alpha) * v / max(l, 0.05)
+        w = float(np.clip(w, -w_max, w_max))
+
+        return v, w
+
+    def _find_closest_point(self, x: float, y: float) -> tuple[tuple[float, float], int]:
+        """Find the closest path point to the current robot pose.
+
+        Args:
+            x: Estimated robot x coordinate [m].
+            y: Estimated robot y coordinate [m].
+
+        Returns:
+            Tuple[float, float]: (x, y) coordinates of the closest path point [m].
+            int: Index of the path point found.
+
+        """
+        # TODO: 4.9. Complete the function body (i.e., find closest_xy and closest_idx).
+        closest_idx = np.argmin(np.linalg.norm(np.array(self._path) - np.array([x, y]), axis=1))
+
+        closest_xy = self._path[closest_idx]
+
+        return closest_xy, closest_idx
+
+    def _find_target_point(
+        self, origin_xy: tuple[float, float], origin_idx: int
+    ) -> tuple[float, float]:
+        """Find the destination path point based on the lookahead distance.
+
+        Args:
+            origin_xy: Current location of the robot (x, y) [m].
+            origin_idx: Index of the current path point.
+
+        Returns:
+            Tuple[float, float]: (x, y) coordinates of the target point [m].
+
+        """
+        # TODO: 4.10. Complete the function body with your code (i.e., determine target_xy).
+        target_xy = (0.0, 0.0)
+        target_idx = None
+        candidate_points = np.array(self._path[origin_idx + 1 :])
+
+        # When the robot is at the end of the path
+        if origin_idx == len(self._path) - 1:
+            return self._path[-1]
+
+        distances = np.linalg.norm(candidate_points - np.array(origin_xy), axis=1)
+
+        # Target is candidate point closest to distance l
+        target_idx = np.argmin(np.abs(distances - self._lookahead_distance))
+        target_xy = candidate_points[target_idx]
+
+        return target_xy
+
+    @property
+    def path(self) -> list[tuple[float, float]]:
+        """Path getter."""
+        return self._path
+
+    @path.setter
+    def path(self, value: list[tuple[float, float]]) -> None:
+        """Path setter."""
+        self._path = value

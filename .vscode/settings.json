@@ -1,8 +1,5 @@
 {
     "editor.formatOnSave": true,
-    "editor.rulers": [
-        100
-    ],
     "editor.tabSize": 4,
     "explorer.sortOrder": "type",
     "files.associations": {
