@@ -30,9 +30,9 @@ The following captures demonstrate the synchronized execution of the particle fi
     <td align="center"><b>Global Path Planning</b></td>
   </tr>
   <tr>
-    <td><img src="assets/particles_synced.gif" alt="Particle filter synchronized GIF" width="350"/></td>
-    <td><img src="assets/complete-run-synced.gif" alt="Coppelia simulation synchronized run" width="300"/></td>
-    <td><img src="assets/path_planning.png" alt="Path planning result" width="350"/></td>
+    <td><img src="assets/particles_synced.gif" alt="Particle filter synchronized GIF" width="350" height="auto"/></td>
+    <td><img src="assets/complete-run-synced.gif" alt="Coppelia simulation synchronized run" width="280" height="auto"/></td>
+    <td><img src="assets/path_planning.png" alt="Path planning result" width="350" height="auto"/></td>
   </tr>
 </table>
 
