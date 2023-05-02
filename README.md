@@ -31,7 +31,7 @@ The following captures demonstrate the synchronized execution of the particle fi
   </tr>
   <tr>
     <td><img src="assets/particles_synced.gif" alt="Particle filter synchronized GIF" style="width: 300px;"/></td>
-    <td><img src="assets/complete-run-synced.gif" alt="Coppelia simulation synchronized run" style="width: 230px;"/></td>
+    <td><img src="assets/complete-run-synced.gif" alt="Coppelia simulation synchronized run" style="width: 250px;"/></td>
     <td><img src="assets/path_planning.png" alt="Path planning result" style="width: 300px;"/></td>
   </tr>
 </table>
